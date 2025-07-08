@@ -1,30 +1,39 @@
-name: Linux Release
-
 on:
   push:
     tags:
       - '*'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag name for release'
+        required: true
+        type: string
 
 permissions:
   contents: write
 
 jobs:
   build-release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential cmake
+
       - name: Build
         run: |
-          cmake -B build
-          cmake --build build -j --config Release
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF
+          cmake --build build -j
+
       - name: Package
         run: |
           tar -czf whisper-cli-linux-amd64.tar.gz -C build/bin whisper-cli
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ github.event.inputs.tag_name || github.ref_name }}
           files: whisper-cli-linux-amd64.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
