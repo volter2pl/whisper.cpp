@@ -14,6 +14,8 @@ jobs:
         run: cmake -B build -DBUILD_SHARED_LIBS=OFF
       - name: Build
         run: cmake --build build -j
+      - name: Run whisper-cli
+        run: ./build/bin/whisper-cli -h > /dev/null
       - name: Test
         run: |
           cd build
