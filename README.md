@@ -78,9 +78,9 @@ sh ./models/download-ggml-model.sh base.en
 Now build the [whisper-cli](examples/cli) example and transcribe an audio file like this:
 
 ```bash
-# build the project
-cmake -B build
-cmake --build build -j --config Release
+# build the project (static binary)
+cmake -B build -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j
 
 # transcribe an audio file
 ./build/bin/whisper-cli -f samples/jfk.wav
